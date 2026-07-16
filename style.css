@@ -1,0 +1,390 @@
+:root {
+    --color-bg: #ffe4e1; /* Misty Rose (Pastel Pink) */
+    --color-primary: #ffb6c1; /* Light Pink */
+    --color-secondary: #dda0dd; /* Plum / Pastel Purple */
+    --color-accent: #ffebcd; /* Blanched Almond / Pastel Yellow */
+    --color-text: #4a4a4a; /* Dark gray for readability */
+    --color-white: #ffffff;
+    --pixel-border: 4px solid var(--color-text);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none; /* Prevent text selection during gameplay */
+}
+
+body {
+    background-color: var(--color-bg);
+    background-image: 
+        radial-gradient(var(--color-primary) 15%, transparent 16%),
+        radial-gradient(var(--color-primary) 15%, transparent 16%);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    font-family: 'Press Start 2P', cursive;
+    color: var(--color-text);
+    overflow: hidden; /* Prevent scrolling */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    touch-action: manipulation;
+}
+
+#game-container {
+    width: 100%;
+    max-width: 480px; /* Mobile width */
+    height: 100vh;
+    max-height: 800px;
+    background-color: var(--color-bg);
+    border: var(--pixel-border);
+    box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    background-image: linear-gradient(180deg, #ffe4e1 0%, #fff0f5 100%);
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Animations */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes float {
+    0% { transform: translateY(100vh); }
+    100% { transform: translateY(-100px); }
+}
+
+.bouncing {
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.title-bounce {
+    font-size: 24px;
+    color: var(--color-secondary);
+    text-shadow: 3px 3px 0 var(--color-white), 5px 5px 0 var(--color-text);
+    margin-bottom: 20px;
+    line-height: 1.5;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.subtitle {
+    font-family: 'Prompt', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 40px;
+    color: var(--color-text);
+    text-shadow: 1px 1px 0 var(--color-white);
+}
+
+.pixel-title {
+    font-size: 20px;
+    color: var(--color-primary);
+    text-shadow: 2px 2px 0 var(--color-text), -1px -1px 0 var(--color-white);
+    margin-bottom: 20px;
+}
+
+.pixel-avatar {
+    width: 100px;
+    height: 100px;
+    background-color: var(--color-secondary);
+    border: var(--pixel-border);
+    margin: 20px auto;
+    position: relative;
+    /* Cute simple pixel face */
+    background-image: 
+        radial-gradient(circle at 30px 40px, var(--color-text) 5px, transparent 6px),
+        radial-gradient(circle at 70px 40px, var(--color-text) 5px, transparent 6px),
+        radial-gradient(circle at 50px 65px, #ff8da1 8px, transparent 9px); /* Blush */
+}
+
+.pixel-avatar::after {
+    content: '';
+    position: absolute;
+    top: 60px;
+    left: 45px;
+    width: 10px;
+    height: 5px;
+    border-bottom: 4px solid var(--color-text);
+    border-radius: 0 0 10px 10px;
+}
+
+.blink-text {
+    animation: blink 1.5s infinite;
+    cursor: pointer;
+    margin-top: 40px;
+    font-size: 16px;
+    color: var(--color-text);
+    background: var(--color-white);
+    padding: 15px 20px;
+    border: var(--pixel-border);
+    box-shadow: 4px 4px 0 var(--color-text);
+    transition: transform 0.1s;
+}
+
+.blink-text:active {
+    box-shadow: 0px 0px 0 var(--color-text);
+    transform: translate(4px, 4px);
+}
+
+/* Balloons */
+#balloon-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+#balloon-counter {
+    position: absolute;
+    bottom: 20px;
+    z-index: 10;
+    background: var(--color-white);
+    padding: 10px;
+    border: var(--pixel-border);
+}
+
+.balloon {
+    position: absolute;
+    width: 50px;
+    height: 60px;
+    background-color: var(--color-secondary);
+    border: var(--pixel-border);
+    border-radius: 20px 20px 20px 20px;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: inset -5px -5px 0 rgba(0,0,0,0.1);
+    z-index: 6;
+}
+.balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 17px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 10px solid var(--color-text);
+}
+
+/* Cake Room */
+.cake-container {
+    margin-top: 50px;
+    position: relative;
+    width: 220px;
+    height: 150px;
+}
+
+.cake {
+    width: 200px;
+    height: 100px;
+    background-color: #ffd1dc; /* Cake color */
+    border: var(--pixel-border);
+    position: absolute;
+    bottom: 0;
+    left: 10px;
+    border-radius: 10px 10px 0 0;
+    box-shadow: inset -10px -10px 0 rgba(0,0,0,0.1);
+}
+
+.frosting {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 202px;
+    height: 30px;
+    background-color: #fff;
+    border: var(--pixel-border);
+    border-radius: 15px 15px 0 0;
+}
+
+.candle {
+    position: absolute;
+    bottom: 95px;
+    width: 15px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+#candle1 { left: 40px; }
+#candle2 { left: 90px; }
+#candle3 { left: 140px; }
+
+.stick {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        #fff,
+        #fff 5px,
+        var(--color-primary) 5px,
+        var(--color-primary) 10px
+    );
+    border: 3px solid var(--color-text);
+}
+
+.flame {
+    position: absolute;
+    top: -20px;
+    left: 0px;
+    width: 15px;
+    height: 20px;
+    background-color: #ffcc00;
+    border: 3px solid #ff9900;
+    border-radius: 50% 50% 20% 20%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.flame.active {
+    opacity: 1;
+    animation: blink 0.5s infinite alternate;
+}
+
+.hint {
+    margin-top: 50px;
+    font-size: 12px;
+    line-height: 1.5;
+    background: var(--color-white);
+    padding: 10px;
+    border: 2px dashed var(--color-text);
+}
+
+/* RPG Dialogue Box */
+#rpg-dialogue {
+    position: absolute;
+    bottom: 20px;
+    left: 5%;
+    width: 90%;
+    z-index: 100;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.dialogue-box {
+    background-color: var(--color-white);
+    border: var(--pixel-border);
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+
+.dialogue-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: var(--color-primary);
+    border: 3px solid var(--color-text);
+    flex-shrink: 0;
+    position: relative;
+    /* Small avatar face */
+    background-image: 
+        radial-gradient(circle at 18px 25px, var(--color-text) 3px, transparent 4px),
+        radial-gradient(circle at 36px 25px, var(--color-text) 3px, transparent 4px);
+}
+.dialogue-avatar::after {
+    content: '';
+    position: absolute;
+    top: 35px;
+    left: 24px;
+    width: 6px;
+    height: 3px;
+    border-bottom: 2px solid var(--color-text);
+}
+
+.dialogue-content {
+    flex-grow: 1;
+    text-align: left;
+    position: relative;
+}
+
+.dialogue-name {
+    font-size: 14px;
+    color: var(--color-secondary);
+    margin-bottom: 10px;
+}
+
+.dialogue-text {
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: 'Prompt', sans-serif; /* Better readability for Thai/long text */
+    font-weight: 700;
+    min-height: 45px;
+}
+
+.dialogue-arrow {
+    position: absolute;
+    bottom: -10px;
+    right: -5px;
+    font-size: 12px;
+    margin-top: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+/* Jumpscare */
+#jumpscare {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#jumpscare img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: shake 0.1s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
