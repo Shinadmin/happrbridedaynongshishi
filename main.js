@@ -322,10 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await wait(1500);
         await playDialogue(finalDialogues);
         
-        // --- JUMPSCARE ---
-        await wait(1000); // 1 second after dialogue finishes
-        stopMusic();
-        await wait(1500); // eerie silence
+     
         const jumpscare = document.getElementById('jumpscare');
         jumpscare.classList.remove('hidden');
         playJumpscareSound();
